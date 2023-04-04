@@ -6,6 +6,7 @@ from sklearn.naive_bayes import MultinomialNB
 
 
 class LicenseIdentifier:
+    # License needs to exclude copyright from licenses
     def __init__(self):
         self.cache_dir = os.path.join(os.path.dirname(__file__), 'cache')
         self.cache_file = os.path.join(self.cache_dir, 'license_identifier.pkl')
