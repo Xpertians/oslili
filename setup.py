@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="license-identifier", version="0.1.3",
+    name="oslilib", version="0.1",
     description="Open Source License Identification Library",
     author="Andrew Barrier",
     author_email="alkamod@protonmail.com",
     packages=find_packages(),
     install_requires=["scikit-learn", ],
-    url='https://your-project-url.com',
+    url='https://oslilib.com',
     package_data={
         '': ['*.txt'],
     },

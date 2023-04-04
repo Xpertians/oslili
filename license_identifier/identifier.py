@@ -1,30 +1,45 @@
 import os
 import re
+import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 
 
 class LicenseIdentifier:
     def __init__(self):
-        self.vectorizer = CountVectorizer(ngram_range=(1, 3), stop_words='english')
-        self.classifier = MultinomialNB()
+        self.cache_dir = os.path.join(os.path.dirname(__file__), 'cache')
+        self.cache_file = os.path.join(self.cache_dir, 'license_identifier.pkl')
+        self.vectorizer = None
+        self.classifier = None
 
-        self.license_texts = []
-        self.license_spdx_codes = []
+        if os.path.exists(self.cache_file):
+            with open(self.cache_file, 'rb') as f:
+                self.vectorizer, self.classifier = pickle.load(f)
+        else:
+            self.license_texts = []
+            self.license_spdx_codes = []
 
-        self.spdx_dir = os.path.join(os.path.dirname(__file__), '..', 'SPDX')
-        for file_name in os.listdir(self.spdx_dir):
-            if file_name.endswith('.txt'):
-                license_spdx_code = os.path.splitext(file_name)[0]
-                self.license_spdx_codes.append(license_spdx_code)
-                with open(os.path.join(self.spdx_dir, file_name), 'r') as f:
-                    license_text = f.read()
-                    license_text = re.sub('[^0-9a-zA-Z]+', ' ', license_text)
-                    self.license_texts.append(license_text)
+            self.spdx_dir = os.path.join(os.path.dirname(__file__), '..', 'SPDX')
+            for file_name in os.listdir(self.spdx_dir):
+                if file_name.endswith('.txt'):
+                    license_spdx_code = os.path.splitext(file_name)[0]
+                    self.license_spdx_codes.append(license_spdx_code)
+                    with open(os.path.join(self.spdx_dir, file_name), 'r') as f:
+                        license_text = f.read()
+                        license_text = re.sub('[^0-9a-zA-Z]+', ' ', license_text)
+                        self.license_texts.append(license_text)
 
-        X = self.vectorizer.fit_transform(self.license_texts)
-        y = self.license_spdx_codes
-        self.classifier.fit(X, y)
+            self.vectorizer = CountVectorizer(ngram_range=(1, 3), stop_words='english')
+            X = self.vectorizer.fit_transform(self.license_texts)
+
+            self.classifier = MultinomialNB()
+            y = self.license_spdx_codes
+            self.classifier.fit(X, y)
+
+            if not os.path.exists(self.cache_dir):
+                os.mkdir(self.cache_dir)
+            with open(self.cache_file, 'wb') as f:
+                pickle.dump((self.vectorizer, self.classifier), f)
 
     def identify_license(self, text):
         text = re.sub('[^0-9a-zA-Z]+', ' ', text)
