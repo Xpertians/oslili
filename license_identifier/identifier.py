@@ -27,7 +27,7 @@ class LicenseIdentifier:
                     self.license_spdx_codes.append(license_spdx_code)
                     with open(os.path.join(self.spdx_dir, file_name), 'r') as f:
                         license_text = f.read()
-                        license_text = re.sub('[^0-9a-zA-Z]+', ' ', license_text)
+                        license_text = self.normilize_text(license_text)
                         self.license_texts.append(license_text)
 
             self.vectorizer = CountVectorizer(ngram_range=(1, 3), stop_words='english')
@@ -41,9 +41,29 @@ class LicenseIdentifier:
                 os.mkdir(self.cache_dir)
             with open(self.cache_file, 'wb') as f:
                 pickle.dump((self.vectorizer, self.classifier), f)
+                
+                
+    def normilize_text(self, text):
+        # remove copyright
+        pattern = re.compile(r'(^\s*Copyright.*?$)+\n\n', re.MULTILINE)
+        text = re.sub(pattern, '', text)
+        pattern = re.compile(r'^.*Copyright.*$', re.MULTILINE)
+        text = re.sub(pattern, '', text)
+        pattern = re.compile(r'^Copyright (\s+(c|\d+))+ .*?$', re.MULTILINE)
+        text = re.sub(pattern, '', text)
+        text = text.lower().strip()
+        
+        # Remove non-alpha
+        text = re.sub('[^0-9a-zA-Z]+', ' ', text)
+        
+        # collapse_whitespace
+        text = re.sub(' +', ' ', text)
+        
+        return text
 
     def identify_license(self, text):
-        text = re.sub('[^0-9a-zA-Z]+', ' ', text)
+        text = self.normilize_text(text)
+        # text = re.sub('[^0-9a-zA-Z]+', ' ', text)
         X = self.vectorizer.transform([text])
         y = self.classifier.predict(X)
         return y[0], self.classifier.predict_proba(X)[0][self.classifier.classes_.tolist().index(y[0])]
