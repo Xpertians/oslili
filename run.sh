@@ -20,6 +20,6 @@ echo "Install Python requirements"
 pip3 install scikit-learn
 
 echo "Running test script"
-#python3 cli.py sample.txt
+python3 cli.py sample.txt
 
 #deactivate
