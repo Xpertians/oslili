@@ -1,5 +1,5 @@
 import argparse
-from license_identifier import LicenseAndCopyrightIdentifier
+from oslili import LicenseAndCopyrightIdentifier
 
 
 def main():

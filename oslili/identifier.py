@@ -22,8 +22,7 @@ class LicenseIdentifier:
             self.license_spdx_codes = []
 
             self.spdx_dir = os.path.join(
-                                os.path.dirname(__file__),
-                                '..', 'SPDX')
+                                os.path.dirname(__file__), 'spdx')
             for file_name in os.listdir(self.spdx_dir):
                 if file_name.endswith('.txt'):
                     license_spdx_code = os.path.splitext(file_name)[0]

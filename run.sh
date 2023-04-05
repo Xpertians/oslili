@@ -1,10 +1,10 @@
 #!/bin/bash
 echo "Removing old ENV"
-rm -rf oslili
+rm -rf oslili_env
 
 echo "Creating ENV"
-python3 -m venv oslili
-activate="oslili/bin/activate"
+python3 -m venv oslili_env
+activate="oslili_env/bin/activate"
 if [ ! -f "$activate" ]
 then
     echo "ERROR: activate not found at $activate"

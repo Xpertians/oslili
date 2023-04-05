@@ -5,11 +5,11 @@ setup(
     description="Open Source License Identification Library",
     author="Andrew Barrier",
     author_email="alkamod@protonmail.com",
-    packages=find_packages(),
+    packages=['oslili', 'oslili.spdx'],
     install_requires=["scikit-learn", ],
     url='https://oslili.com',
     package_data={
-        '': ['*.txt'],
+        "oslili.spdx": ["*.txt",],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
