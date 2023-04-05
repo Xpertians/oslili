@@ -3,7 +3,8 @@ from license_identifier import LicenseAndCopyrightIdentifier
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Identify open source license and copyright statements in a text file')
+    msg = 'Identify open source license and copyright statements'
+    parser = argparse.ArgumentParser(description=msg)
     parser.add_argument('file_path', help='Path to the file to analyze')
     args = parser.parse_args()
     file_path = args.file_path
