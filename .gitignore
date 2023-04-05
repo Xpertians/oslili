@@ -10,7 +10,7 @@ __pycache__/
 .Python
 build/
 oslili_env/
-license_identifier/cache/
+oslili/cache/
 develop-eggs/
 dist/
 downloads/
