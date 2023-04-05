@@ -1,10 +1,10 @@
 #!/bin/bash
 echo "Removing old ENV"
-rm -rf oslilib
+rm -rf oslili
 
 echo "Creating ENV"
-python3 -m venv oslilib
-activate="oslilib/bin/activate"
+python3 -m venv oslili
+activate="oslili/bin/activate"
 if [ ! -f "$activate" ]
 then
     echo "ERROR: activate not found at $activate"
@@ -22,4 +22,4 @@ pip3 install scikit-learn
 echo "Running test script"
 python3 cli.py sample.txt
 
-#deactivate
+deactivate
