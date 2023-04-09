@@ -49,11 +49,7 @@ class LicenseIdentifier:
 
     def normilize_text(self, text):
         # remove copyright
-        pattern = re.compile(r'(^\s*Copyright.*?$)+\n\n', re.MULTILINE)
-        text = re.sub(pattern, '', text)
-        pattern = re.compile(r'^.*Copyright.*$', re.MULTILINE)
-        text = re.sub(pattern, '', text)
-        pattern = re.compile(r'^Copyright (\s+(c|\d+))+ .*?$', re.MULTILINE)
+        pattern = re.compile(r'(?i)copyright\s+\d{4}(\s*-\s*\d{4})?', re.MULTILINE)
         text = re.sub(pattern, '', text)
         text = text.lower().strip()
 
@@ -123,5 +119,8 @@ class LicenseAndCopyrightIdentifier:
 
     def identify_copyright(self, text):
         year_range = self.identify_year_range(text)
-        statement = self.identify_statement(text)
-        return year_range, statement
+        if year_range is None:
+            return '', ''
+        else:
+            statement = self.identify_statement(text)
+            return year_range, statement
