@@ -2,15 +2,20 @@
 
 Open Source License Identification Library is an experimental code, that use Scikit-learn to implement a Multinomial Naive Bayes classifier trained with SPDX data to identify Open Source Licenses. This should be consider as a proof of concept for identify Open Source licenses using Machine Learning. 
 
-For a more robust implementation, please check the project Askalono https://github.com/jpeddicord/askalono
+This is an experimental project, please don't use it for production. For a more robust implementation, please check the project Askalono https://github.com/jpeddicord/askalono
 
 
 ## Usage
 
 ### On the command line
 
-Pending information
-
+You can use OSLiLi in your terminal as command line, please install the oslili-cli package:
+```
+$ pip3 install oslili-cli
+$ oslili-cli LICENSE
+License: MIT (0.89 probability)
+Copyright: ('2021', '(c)  Andrew Barrier')
+```
 ### As a library
 
 In order to use the library, you need to import and use identify_license or identify_copyright.
