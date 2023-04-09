@@ -13,8 +13,34 @@ Pending information
 
 ### As a library
 
-Pending information
+In order to use the library, you need to import and use identify_license or identify_copyright.
+```
+import argparse
+from oslili import LicenseAndCopyrightIdentifier
 
+
+def main():
+    msg = 'Identify open source license and copyright statements'
+    parser = argparse.ArgumentParser(description=msg)
+    parser.add_argument('file_path', help='Path to the file to analyze')
+    args = parser.parse_args()
+    file_path = args.file_path
+
+    with open(args.file_path, 'r') as f:
+        text = f.read()
+
+    identifier = LicenseAndCopyrightIdentifier()
+    license_spdx_code, license_proba = identifier.identify_license(text)
+    print(f'License: {license_spdx_code} ({license_proba:.2f} probability)')
+    year_range, statement = identifier.identify_copyright(text)
+    if statement:
+        if None not in statement:
+            print(f'Copyright: {statement}')
+
+
+if __name__ == '__main__':
+    main()
+```
 ## Notice
 
 This tool does not provide legal advice and it is not a lawyer. It endeavors to match your input to a database of similar license texts, and tell you what it thinks is a close match. But, it can't tell you that the given license is authoritative over a project. Nor can it tell you what to do with a license once it's identified. You are not entitled to rely on the accuracy of the output of this tool, and should seek independent legal advice for any licensing questions that may arise from using this tool.
