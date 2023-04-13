@@ -97,9 +97,9 @@ class CopyrightIdentifier:
                 if year_range:
                     statement = self.identify_statement(line, year_range)
                     return year_range, statement
-                else:
-                    statement = self.identify_statement(line, '')
-                    return None, statement
+                # else:
+                    # statement = self.identify_statement(line, '')
+                    # return None, statement
         return None, None
 
 
