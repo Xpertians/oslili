@@ -12,8 +12,9 @@ setup(
         "oslili.spdx": ["*.txt",],
     },
     classifiers=[
-        "Programming Language :: Python :: 3",
-        "OSI Approved :: Apache Software License",
-        "Operating System :: OS Independent",
-        ],
+        'Programming Language :: Python :: 3',
+        'Operating System :: POSIX :: Linux',
+        'Development Status :: 3 - Alpha',
+        'License :: OSI Approved :: Apache Software License'
+    ],
 )
