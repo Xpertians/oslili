@@ -1,6 +1,7 @@
 import os
 import re
 import pickle
+import ssdeep
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 
@@ -11,6 +12,9 @@ class LicenseIdentifier:
         self.cache_file = os.path.join(
                             self.cache_dir,
                             'license_identifier.pkl')
+        self.hash_file = os.path.join(
+                            self.cache_dir,
+                            'license_hashes.dat')
         self.vectorizer = None
         self.classifier = None
 
@@ -20,7 +24,8 @@ class LicenseIdentifier:
         else:
             self.license_texts = []
             self.license_spdx_codes = []
-
+            if not os.path.exists(self.cache_dir):
+                os.mkdir(self.cache_dir)
             self.spdx_dir = os.path.join(
                                 os.path.dirname(__file__), 'spdx')
             for file_name in os.listdir(self.spdx_dir):
@@ -32,6 +37,10 @@ class LicenseIdentifier:
                         license_text = f.read()
                         license_text = self.normilize_text(license_text)
                         self.license_texts.append(license_text)
+                        hashfile = self.hash_file
+                        idxstr = license_spdx_code
+                        hashstr = ssdeep.hash(license_text)
+                        self.store_hashes(hashfile, idxstr, hashstr)
 
             self.vectorizer = CountVectorizer(
                                     ngram_range=(1, 3),
@@ -42,8 +51,6 @@ class LicenseIdentifier:
             y = self.license_spdx_codes
             self.classifier.fit(X, y)
 
-            if not os.path.exists(self.cache_dir):
-                os.mkdir(self.cache_dir)
             with open(self.cache_file, 'wb') as f:
                 pickle.dump((self.vectorizer, self.classifier), f)
 
@@ -52,18 +59,21 @@ class LicenseIdentifier:
         pattern = re.compile(r'(?i)copyright\s+\d{4}(\s*-\s*\d{4})?', re.MULTILINE)
         text = re.sub(pattern, '', text)
         text = text.lower().strip()
-
         # Remove non-alpha
         text = re.sub('[^0-9a-zA-Z]+', ' ', text)
-
         # collapse_whitespace
         text = re.sub(' +', ' ', text)
-
         return text
+
+    def store_hashes(self, hashfile, idxstr, hashstr):
+        str_hash = idxstr + "|" + hashstr
+        with open(hashfile, 'a+') as file:
+                file.seek(0)
+                if str_hash + '\n' not in file.readlines():
+                    file.write(str_hash + '\n')
 
     def identify_license(self, text):
         text = self.normilize_text(text)
-        # text = re.sub('[^0-9a-zA-Z]+', ' ', text)
         X = self.vectorizer.transform([text])
         y = self.classifier.predict(X)
         return y[0], \
