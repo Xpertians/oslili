@@ -75,11 +75,18 @@ class LicenseIdentifier:
     def identify_license(self, text):
         text = self.normilize_text(text)
         X = self.vectorizer.transform([text])
-        y = self.classifier.predict(X)
-        return y[0], \
-            self.classifier.predict_proba(X)[0][
-               self.classifier.classes_.tolist().index(y[0])
-               ]
+        predicted_class = self.classifier.predict(X)[0]
+        predicted_proba = self.classifier.predict_proba(X)[0]
+
+        # Getting the index of the predicted class in the list of classes
+        class_index = self.classifier.classes_.tolist().index(predicted_class)
+
+        # Check if the highest probability is less than 50%
+        print(predicted_proba[class_index])
+        if predicted_proba[class_index] < 0.5:
+            return '', 0.0  # Return empty string and 0 probability if less than 50%
+        else:
+            return predicted_class, predicted_proba[class_index]
 
 
 class CopyrightIdentifier:
