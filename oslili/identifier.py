@@ -56,7 +56,9 @@ class LicenseIdentifier:
 
     def normilize_text(self, text):
         # remove copyright
-        pattern = re.compile(r'(?i)copyright\s+\d{4}(\s*-\s*\d{4})?', re.MULTILINE)
+        pattern = re.compile(
+            r'(?i)copyright\s+\d{4}(\s*-\s*\d{4})?', re.MULTILINE
+        )
         text = re.sub(pattern, '', text)
         text = text.lower().strip()
         # Remove non-alpha
@@ -68,23 +70,18 @@ class LicenseIdentifier:
     def store_hashes(self, hashfile, idxstr, hashstr):
         str_hash = idxstr + "|" + hashstr
         with open(hashfile, 'a+') as file:
-                file.seek(0)
-                if str_hash + '\n' not in file.readlines():
-                    file.write(str_hash + '\n')
+            file.seek(0)
+            if str_hash + '\n' not in file.readlines():
+                file.write(str_hash + '\n')
 
     def identify_license(self, text):
         text = self.normilize_text(text)
         X = self.vectorizer.transform([text])
         predicted_class = self.classifier.predict(X)[0]
         predicted_proba = self.classifier.predict_proba(X)[0]
-
-        # Getting the index of the predicted class in the list of classes
         class_index = self.classifier.classes_.tolist().index(predicted_class)
-
-        # Check if the highest probability is less than 50%
-        print(predicted_proba[class_index])
         if predicted_proba[class_index] < 0.5:
-            return '', 0.0  # Return empty string and 0 probability if less than 50%
+            return '', 0.0
         else:
             return predicted_class, predicted_proba[class_index]
 
