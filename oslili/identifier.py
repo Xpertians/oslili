@@ -17,6 +17,8 @@ class LicenseIdentifier:
                             'license_hashes.dat')
         self.vectorizer = None
         self.classifier = None
+        self.hash_cache = {}
+        self.load_hashes()
 
         if os.path.exists(self.cache_file):
             with open(self.cache_file, 'rb') as f:
@@ -59,7 +61,8 @@ class LicenseIdentifier:
         pattern = re.compile(
             r'(?i)copyright\s+\d{4}(\s*-\s*\d{4})?', re.MULTILINE
         )
-        text = re.sub(pattern, '', text)
+        pattern = r'^(.*copyright.*\n?)'
+        text = re.sub(pattern, '', text, flags=re.IGNORECASE)
         text = text.lower().strip()
         # Remove non-alpha
         text = re.sub('[^0-9a-zA-Z]+', ' ', text)
@@ -74,8 +77,20 @@ class LicenseIdentifier:
             if str_hash + '\n' not in file.readlines():
                 file.write(str_hash + '\n')
 
+    def load_hashes(self):
+        if os.path.exists(self.hash_file):
+            with open(self.hash_file, 'r') as file:
+                for line in file:
+                    idxstr, hashstr = line.strip().split('|')
+                    self.hash_cache[hashstr] = idxstr
+
     def identify_license(self, text):
         text = self.normilize_text(text)
+        input_hash = ssdeep.hash(text)
+        for cached_hash, spdx_code in self.hash_cache.items():
+            similarity = ssdeep.compare(input_hash, cached_hash)
+            if similarity >= 90:
+                return spdx_code, similarity / 100.0
         X = self.vectorizer.transform([text])
         predicted_class = self.classifier.predict(X)[0]
         predicted_proba = self.classifier.predict_proba(X)[0]
@@ -111,9 +126,6 @@ class CopyrightIdentifier:
                 if year_range:
                     statement = self.identify_statement(line, year_range)
                     return year_range, statement
-                # else:
-                    # statement = self.identify_statement(line, '')
-                    # return None, statement
         return None, None
 
 
