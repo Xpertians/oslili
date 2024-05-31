@@ -2,7 +2,6 @@ import os
 import re
 import pickle
 import ssdeep
-from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
@@ -11,9 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 class LicenseIdentifier:
     def __init__(self):
         self.cache_dir = os.path.join(os.path.dirname(__file__), 'cache')
-        self.cache_file = os.path.join(
-            self.cache_dir, 'license_identifier.pkl'
-        )
+        self.cache_file = os.path.join(self.cache_dir, 'license_identifier.pkl')
         self.hash_file = os.path.join(self.cache_dir, 'license_hashes.dat')
         self.vectorizer = None
         self.classifier = None
@@ -38,10 +35,7 @@ class LicenseIdentifier:
                         license_text = f.read()
                         license_text = self.normalize_text(license_text)
                         self.license_texts.append(license_text)
-                        hashfile = self.hash_file
-                        idxstr = license_spdx_code
-                        hashstr = ssdeep.hash(license_text)
-                        self.store_hashes(hashfile, idxstr, hashstr)
+                        self.store_hashes(self.hash_file, license_spdx_code, ssdeep.hash(license_text))
 
             self.vectorizer = TfidfVectorizer(
                 ngram_range=(1, 3), stop_words='english'
@@ -153,9 +147,7 @@ class CopyrightIdentifier:
         return None
 
     def identify_statement(self, text, year_range):
-        statement = text.replace('Copyright', '').replace(
-            year_range, ''
-        ).strip()
+        statement = text.replace('Copyright', '').replace(year_range, '').strip()
         return statement
 
     def identify_copyright(self, text):
@@ -181,7 +173,7 @@ class CopyrightIdentifier:
         results = []
         for text, prediction in zip(text_inputs, predictions):
             if (text.startswith('copyright') or " copyright" in text):
-                if ("copyright " in text and len(text) <= 50 and
+                if ("copyright " in text and len(text) <= 100 and
                         "yyyy" not in text and prediction == 'copyright'):
                     results.append({
                         "text": text,
