@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 
 HERE = pathlib.Path(__file__).parent
-VERSION = '0.12'
+VERSION = '0.13'
 PACKAGE_NAME = 'oslili'
 AUTHOR = 'Oscar Valenzuela B.'
 AUTHOR_EMAIL = 'alkamod@gmail.com'
