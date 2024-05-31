@@ -56,7 +56,18 @@ Remember: The tool can't tell you if a license works for your project or use cas
 
 ### Where do the licenses come from?
 
-License data is sourced directly from SPDX: https://github.com/spdx/license-list-data
+License SPDX dataset is sourced directly from SPDX: https://github.com/spdx/license-list-data. Datasets for ML training were generated scanning different sources, and inspired by two academic publications:
+
+* [Machine Learning-Based Detection of Open Source License Exceptions](https://ieeexplore.ieee.org/document/7985655):
+
+C. Vendome, M. Linares-Vásquez, G. Bavota, M. Di Penta, D. German and D. Poshyvanyk, "Machine Learning-Based Detection of Open Source License Exceptions," 2017 IEEE/ACM 39th International Conference on Software Engineering (ICSE), Buenos Aires, 2017, pp. 118-129, doi: 10.1109/ICSE.2017.19.
+
+
+* [A Machine Learning Method for Automatic Copyright Notice Identification of Source Files](https://www.jstage.jst.go.jp/article/transinf/E103.D/12/E103.D_2020EDL8089/_article):
+
+Shi QIU, German M. DANIEL, Katsuro INOUE, A Machine Learning Method for Automatic Copyright Notice Identification of Source Files, IEICE Transactions on Information and Systems, 2020, Volume E103.D, Issue 12, Pages 2709-2712, Released December 01, 2020, Online ISSN 1745-1361, Print ISSN 0916-8532, https://doi.org/10.1587/transinf.2020EDL8089, https://www.jstage.jst.go.jp/article/transinf/E103.D/12/E103.D_2020EDL8089/_article/-char/en.
+
+
 
 ## Contributing
 
