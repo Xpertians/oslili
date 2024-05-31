@@ -2,8 +2,11 @@ import os
 import re
 import pickle
 import ssdeep
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 class LicenseIdentifier:
@@ -15,19 +18,67 @@ class LicenseIdentifier:
         self.hash_file = os.path.join(
                             self.cache_dir,
                             'license_hashes.dat')
+        self.tfidf_cache = os.path.join(
+                            self.cache_dir,
+                            'tfidf_data.pkl')
+        self.model_cache = os.path.join(
+                            self.cache_dir,
+                            'naive_bayes_model.pkl')
         self.vectorizer = None
         self.classifier = None
         self.hash_cache = {}
         self.load_hashes()
+        self.datasets_dir = os.path.join(
+                            os.path.dirname(__file__), 'datasets')
+        if not os.path.exists(self.cache_dir):
+            os.mkdir(self.cache_dir)
+        if os.path.exists(self.tfidf_cache):
+            # Load cached TF-IDF vectors, labels, and vectorizer.
+            with open(self.tfidf_cache, 'rb') as f:
+                X_train_tfidf, X_test_tfidf, y_train, y_test, vectorizer = pickle.load(f)
+        else:
+            # Load data, create labels, and process them into TF-IDF features
+            cr_pos_path = os.path.join(self.datasets_dir, 'cr_pos')
+            cr_neg_path = os.path.join(self.datasets_dir, 'cr_neg')
+            with open(cr_pos_path, 'r') as file:
+                cr_pos_content = file.readlines()
+            with open(cr_neg_path, 'r') as file:
+                cr_neg_content = file.readlines()
+            labeled_data = [{'text': line.strip(), 'label': 'copyright'} for line in cr_pos_content] + \
+                   [{'text': line.strip(), 'label': 'non-copyright'} for line in cr_neg_content]
+            texts = [example['text'] for example in labeled_data]
+            labels = [example['label'] for example in labeled_data]
+            # Split into training and testing sets
+            X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.3, random_state=42)
+            # Initialize a TF-IDF vectorizer and transform the text data
+            vectorizer = TfidfVectorizer()
+            X_train_tfidf = vectorizer.fit_transform(X_train)
+            X_test_tfidf = vectorizer.transform(X_test)
+            # Cache processed data and the vectorizer
+            with open(self.tfidf_cache, 'wb') as f:
+                pickle.dump((X_train_tfidf, X_test_tfidf, y_train, y_test, vectorizer), f)
 
+        # Initialize and train a Naive Bayes model (or load it if cached)
+        if os.path.exists(self.model_cache):
+            with open(self.model_cache, 'rb') as f:
+                classifier = pickle.load(f)
+        else:
+            classifier = MultinomialNB()
+            classifier.fit(X_train_tfidf, y_train)
+            with open(self.model_cache, 'wb') as f:
+                pickle.dump(classifier, f)
+
+        # Predict labels on the test set and evaluate the model
+        y_pred = classifier.predict(X_test_tfidf)
+        classification_rep = classification_report(y_test, y_pred, target_names=['copyright', 'non-copyright'])
+        print(classification_rep)
+        exit()
         if os.path.exists(self.cache_file):
             with open(self.cache_file, 'rb') as f:
                 self.vectorizer, self.classifier = pickle.load(f)
         else:
             self.license_texts = []
             self.license_spdx_codes = []
-            if not os.path.exists(self.cache_dir):
-                os.mkdir(self.cache_dir)
             self.spdx_dir = os.path.join(
                                 os.path.dirname(__file__), 'spdx')
             for file_name in os.listdir(self.spdx_dir):
