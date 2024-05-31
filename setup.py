@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 
 HERE = pathlib.Path(__file__).parent
-VERSION = '0.11'
+VERSION = '0.13'
 PACKAGE_NAME = 'oslili'
 AUTHOR = 'Oscar Valenzuela B.'
 AUTHOR_EMAIL = 'alkamod@gmail.com'
@@ -23,11 +23,12 @@ setup(
     license=LICENSE,
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
-    packages=['oslili', 'oslili.spdx'],
-    install_requires=["scikit-learn", "ssdeep" ],
+    packages=['oslili', 'oslili.spdx', 'oslili.datasets'],
+    install_requires=["scikit-learn==1.4.2", "ssdeep" ],
     url=URL,
     package_data={
         "oslili.spdx": ["*.txt",],
+        "oslili.datasets": ["*",],
     },
     classifiers=[
         'Programming Language :: Python :: 3',
