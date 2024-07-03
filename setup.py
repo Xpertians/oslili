@@ -24,7 +24,7 @@ setup(
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     packages=['oslili', 'oslili.spdx', 'oslili.datasets'],
-    install_requires=["scikit-learn==1.4.2", "ssdeep" ],
+    install_requires=["scikit-learn==1.5.0", "ssdeep" ],
     url=URL,
     package_data={
         "oslili.spdx": ["*.txt",],
