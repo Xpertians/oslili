@@ -78,13 +78,14 @@ class LicenseIdentifier:
         input_hash = ssdeep.hash(text)
         for cached_hash, spdx_code in self.hash_cache.items():
             similarity = ssdeep.compare(input_hash, cached_hash)
+            # print(input_hash, "<>", cached_hash, spdx_code, ":", similarity)
             if similarity >= 95:
                 return spdx_code, similarity / 100.1
         X = self.vectorizer.transform([text])
         predicted_class = self.classifier.predict(X)[0]
         predicted_proba = self.classifier.predict_proba(X)[0]
         class_index = self.classifier.classes_.tolist().index(predicted_class)
-        if predicted_proba[class_index] < 0.5:
+        if predicted_proba[class_index] < 0.3:
             return '', 0.0
         else:
             return predicted_class, predicted_proba[class_index]
