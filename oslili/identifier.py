@@ -76,11 +76,17 @@ class LicenseIdentifier:
     def identify_license(self, text):
         text = self.normalize_text(text)
         input_hash = ssdeep.hash(text)
+        results = []
         for cached_hash, spdx_code in self.hash_cache.items():
             similarity = ssdeep.compare(input_hash, cached_hash)
             # print(input_hash, "<>", cached_hash, spdx_code, ":", similarity)
-            if similarity >= 95:
-                return spdx_code, similarity / 100.1
+            # if similarity >= 95:
+                # return spdx_code, similarity / 100.1
+            if similarity > 90:
+                results.append((spdx_code, similarity))
+        if results:
+            results.sort(key=lambda x: x[1], reverse=True)
+            return results[0][0], results[0][1] / 100.1
         X = self.vectorizer.transform([text])
         predicted_class = self.classifier.predict(X)[0]
         predicted_proba = self.classifier.predict_proba(X)[0]
