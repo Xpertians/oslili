@@ -1,4 +1,9 @@
+# DEPRECATION NOTICE:
+This project has been deprecated in favor of https://github.com/oscarvalenzuelab/semantic-copycat-oslili/
+
+
 # OSLiLi - Open Source License Identification Library
+
 
 Open Source License Identification Library is an experimental code, that use Scikit-learn to implement a Multinomial Naive Bayes classifier trained with SPDX data to identify Open Source Licenses. This should be consider as a proof of concept for identify Open Source licenses using Machine Learning. 
 
